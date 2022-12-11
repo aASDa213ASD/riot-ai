@@ -1,0 +1,40 @@
+# Button Scanning regions
+account_level = (1055, 2, 1130, 80)
+level_up_ok = (536, 628, 733, 694)
+champ_select_bug_ok = (587, 370, 690, 438)
+email_verification = (866, 69, 916, 120)
+close_challenges = (340, 527, 773, 661)
+play_button = (63, 21, 187, 59)
+lobby_status = (358, 593, 704, 715)
+game_mode_select = (32, 83, 290, 117)
+intro_bots = (430, 480, 485, 507)
+confirm = (420, 663, 633, 710)
+find_match = (423, 650, 620, 708)
+accept = (538, 524, 744, 584)
+choose_champ = (435, 13, 844, 45)
+champ_select = (343, 123, 936, 586)
+lockin = (550, 580, 733, 629)
+summoner_spells = (345, 655, 935, 710)
+summoner_spell_select = (588, 410, 841, 626)
+reconnect = (371, 294, 675, 428)
+
+# Ingame regions
+lockscreen = (1059, 730, 1097, 751)
+hud = (331, 611, 906, 750)
+health_bar = (448, 706, 730, 720)
+inventory = (750, 648, 878, 738)
+minimap = (1105, 574, 1272, 743)
+turret_1 = (240, 80, 1200, 405)
+turret_2 = (250, 32, 1011, 132)
+enemy_location_far = (0, 135, 1140, 560)
+enemy_location_nearby = (438, 196, 831, 465)
+
+# Shop regions
+shop_craft = (696, 172, 962, 398)
+shop_items = (274, 107, 695, 567)
+shop_utils = (152, 145, 269, 349)
+shop_boots = (152, 366, 269, 519)
+
+# Not used
+key_fragment = (330, 514, 898, 663)
+minimap = (1104, 572, 1272, 741)
