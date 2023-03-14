@@ -16,6 +16,7 @@ champ_select = (343, 123, 936, 586)
 lockin = (550, 580, 733, 629)
 summoner_spells = (345, 655, 935, 710)
 summoner_spell_select = (588, 410, 841, 626)
+runes = (103, 58, 1191, 719)
 reconnect = (371, 294, 675, 428)
 
 # Ingame regions
@@ -30,10 +31,10 @@ enemy_location_far = (0, 135, 1140, 560)
 enemy_location_nearby = (438, 196, 831, 465)
 
 # Shop regions
-shop_craft = (696, 172, 962, 398)
-shop_items = (274, 107, 695, 567)
-shop_utils = (152, 145, 269, 349)
-shop_boots = (152, 366, 269, 519)
+shop_craft = (601, 216, 868, 605)
+shop_items = (177, 149, 601, 643)
+shop_utils = (63, 192, 166, 384)
+shop_boots = (63, 413, 166, 555)
 
 # Not used
 key_fragment = (330, 514, 898, 663)

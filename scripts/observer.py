@@ -17,7 +17,7 @@ class Observer(CoreAI):
 
     def update_title(self):
         ctypes.windll.kernel32.SetConsoleTitleW(
-        f'Level {data.account_level}, Game {data.games_finished}/{data.games_to_play}'
+        f'{data.summoner_name}, Level {data.account_level}, Game {data.games_finished}/{data.games_to_play}'
         )
     
     def close_process(self, process: str):
@@ -76,15 +76,23 @@ class Observer(CoreAI):
                 break
     
     def honor_teammate(self, rect):
-        if self.find(pictures.honor_a_teammate, regions.choose_champ):
-            teammate = random.randint(3)
-            print(f'Honoring teammate {teammate + 1}')
-            self.click(rect[0] + data.honor_coordinates[teammate], rect[1] + 370, lmb=True)
+        if (data.honor_teammates):
+            if self.find(pictures.honor_a_teammate, regions.choose_champ):
+                teammate = random.randint(3)
+                print(f'Honoring teammate {teammate + 1}')
+                self.click(rect[0] + data.honor_coordinates[teammate], rect[1] + 370, lmb=True)
 
     def champ_select(self):
-        print('Entering champ select')
+        print('Entering champ select...')
         rect = self.get_coords('League of Legends')
 
+        if (data.random_champions):
+            champion_id = random.randint(6)
+            x = rect[0] + data.random_champion[champion_id]; y = rect[1] + 167
+            self.click(x, y, lmb=True)
+            self.click_on(pictures.lockin, regions.lockin, leftClick=True)
+            return
+        
         for champion in self.champions_list:
             print(champion)
             sleep(0.75)
@@ -95,33 +103,46 @@ class Observer(CoreAI):
         if self.find(pictures.choose_champ, regions.choose_champ):
             print('Still in champ select')
             self.click_on(pictures.ok_champ_select_bug, None, leftClick=True)
-            self.click_on(pictures.close_email, None, leftClick=True)
             champion_id = random.randint(6)
             x = rect[0] + data.random_champion[champion_id]; y = rect[1] + 167
             self.click(x, y, lmb=True)
             self.click_on(pictures.lockin, regions.lockin, leftClick=True)
             return
 
+    def set_runes_and_summs(self):
+        if (data.random_runes_summs):
+            print('Looking for runes...')
+            rect = self.get_coords('League of Legends')
+            coordinates = self.find(pictures.new_runes, regions.summoner_spells)
+            print(f'RUNES COORDS: {coordinates}')
+            if coordinates is not None:
+                # Open runes
+                self.click(coordinates[0], coordinates[1], lmb=True)
+                sleep(2) # Wait to load, delay is not enough
+                x = rect[0] + data.random_rune[random.randint(3)]; y = rect[1] + 326
+                self.click(x, y, lmb=True)
+                sleep(1)
+                self.click_on(pictures.close_email, regions.runes, leftClick=True) 
+                data.prepared_to_fight = True
+        elif (data.random_summs):
+            self.set_summoner_spells()
+
     def set_summoner_spells(self):
-        print('Looking for summoner spells')
-        coordinates = self.find(pictures.edit_runes, regions.summoner_spells)
-        if coordinates is not None:
-            # Select flash
-            self.click(coordinates[0], coordinates[1], x_align=300, lmb=True)
-            sleep(2) # Wait to load, delay is not enough
-            self.click_on(pictures.summonerspell_flash, regions.summoner_spell_select, leftClick=True) 
+        if (data.random_summs):
+            print('Looking for summoner spells...')
+            coordinates = self.find(pictures.edit_runes, regions.summoner_spells)
+            print('Change runes coords: ', coordinates)
+            if coordinates is not None:
+                # Select flash
+                self.click(coordinates[0], coordinates[1], x_align=300, lmb=True)
+                sleep(2) # Wait to load, delay is not enough
+                self.click_on(pictures.summonerspell_flash, regions.summoner_spell_select, leftClick=True) 
 
-            sleep(1)
+                sleep(1)
 
-            # Select random
-            self.click(coordinates[0], coordinates[1], x_align=250, lmb=True)
-            spell = random.randint(5)
-            sleep(2)
-            self.click_on(self.summonerSpells_list[spell], regions.summoner_spell_select, leftClick=True)
-            data.prepared_to_fight = True
-    
-    # def open_client(self):
-    #     try:
-    #         subprocess.Popen(lol_client_path)
-    #     except Exception:
-    #         print("Couldn't open league client")
+                # Select random
+                self.click(coordinates[0], coordinates[1], x_align=250, lmb=True)
+                spell = random.randint(5)
+                sleep(2)
+                self.click_on(self.summonerSpells_list[spell], regions.summoner_spell_select, leftClick=True)
+                data.prepared_to_fight = True

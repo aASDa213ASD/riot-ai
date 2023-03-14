@@ -36,8 +36,8 @@ class Player(CoreAI):
     
     def click_mid_safe(self, rect):
         random_coordinate = randint(1, 5)
-        self.x = rect[0] + 1190
-        self.y = rect[1] + 648 - random_coordinate
+        self.x = rect[0] + 1164
+        self.y = rect[1] + 662 - random_coordinate
         self.click(self.x, self.y, rmb=True)
 
     def is_in_turret_range(self, region_turret):

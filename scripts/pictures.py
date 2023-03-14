@@ -28,6 +28,7 @@ select_daily = 'select_daily.png'
 skip_honor = 'skip_honor.png' # not in use
 trinket = 'trinket.png'
 edit_runes = 'edit_runes.png'
+new_runes = 'new_runes.png'
 honor_a_teammate = 'honor_a_teammate.png'
 send_email = 'send_email.png' # n   ot in use
 close_email = 'close_email.png'

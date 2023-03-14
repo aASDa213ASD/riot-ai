@@ -1,48 +1,30 @@
-# Bot setup vars
-games_to_play = -1  # default to -1 to tell the robot and listener threads to wait
+# Bot settings
+games_to_play = 0
 games_finished = 0
+random_champions = 0
+random_runes_summs = 0
+random_summs = 0
+honor_teammates = 0
 
 # Account-related vars
+summoner_name = None
+summoner_region = None
 account_level = 0
 account_level_last_check = 0
-level_check_flag = 0
+account_level_cap = 0
+account_level_flag = False
 
 # Path vars
-lol_client_path = None
 picture_path = None
 shop_path = None
-champion_typelist = None
-files_to_replace = ['game.cfg', 'input.ini']
-
-# Thread variables
-listener_thread = None # ?
-listener_thread_id = None # ?
-bot_thread = None # ?
 
 # Client variables
 honor_coordinates = [273, 597, 909, 1230]
 random_champion = [386, 486, 588, 692, 790, 893]
-
-# Numerical variables
-go_flag = 1
-stop_flag = 0
-time_since_last_click = 0
-ingame = 0
-prepared_to_fight = False
-
-# String variables
-last_status = None
-available_champions = []
-
-# File variables
-lol_client_path = None
-picture_path = None
-shop_path = None
-champion_typelist = None
-files_to_replace = ['game.cfg', 'input.ini']
+random_rune = [558, 797, 1040]
 
 # Game variables
-dead = None
+ingame = 0
 current_champion = None
 
 # Shop variables

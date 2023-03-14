@@ -10,13 +10,13 @@ shop = Shop()
 
 # TODO: Rewrite ludens recipe in shop.py
 # TODO: Add ahri in observer.championslist
-# TODO: Set custom level in settings.ini (-1, 10, 30 was needed so far)
-
+# TODO: Set custom level in settings.ini (0, 10, 30 was needed so far)
 
 def run():
+    observer.update_title()
     while True:
         start = perf_counter()
-
+    
         if time() - data.account_level_last_check > 3600:
             try:
                 utils.get_account_level()
@@ -28,11 +28,11 @@ def run():
             play()
             continue
 
-        if data.level_check_flag: # TODO: Rewrite
-            if observer.find(pictures.level_30, regions.account_level) is not None:
-                print('Level 30 reached !')
-                observer.close_process('League of Legends')
-                stop_bot()
+        # if data.account_level_flag: # TODO: Rewrite
+        #     if observer.find(pictures.level_30, regions.account_level) is not None:
+        #         print('Level 30 reached !')
+        #         observer.close_process('League of Legends')
+        #         break
 
         if observer.find(pictures.daily_play, None) is not None:
             observer.claim_daily_play()
@@ -44,11 +44,11 @@ def run():
         if not observer.click_on(pictures.play_button, regions.play_button, leftClick=True, delay=True):
             observer.click_on(pictures.party, regions.play_button, leftClick=True, delay=True)
 
-        if observer.click_on(
-            pictures.players_are_not_ready, regions.lobby_status
-            ) or observer.click_on(pictures.players_are_not_ready_2, regions.lobby_status):
-            # Create new queue due to a bug with lane selection on intro bots
-            observer.click_on(pictures.close_email, regions.lobby_status, leftClick=True, conf=0.7)
+        # if observer.click_on(
+        #     pictures.players_are_not_ready, regions.lobby_status
+        #     ) or observer.click_on(pictures.players_are_not_ready_2, regions.lobby_status):
+        #     # Create new queue due to a bug with lane selection on intro bots
+        #     observer.click_on(pictures.close_email, regions.lobby_status, leftClick=True, conf=0.7)
 
         observer.click_on(pictures.coop_vs_ai, regions.game_mode_select, leftClick=True, delay=True)
 
@@ -162,8 +162,7 @@ def accept_game():
                 continue
             elif observer.find(pictures.choose_champ, regions.choose_champ) is not None:
                 observer.champ_select()
-                if data.prepared_to_fight is False:
-                    observer.set_summoner_spells()
+                observer.set_runes_and_summs()
             else:
                 break
 
