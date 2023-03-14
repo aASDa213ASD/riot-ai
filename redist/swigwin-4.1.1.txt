@@ -1,0 +1,6 @@
+Swig link: http://www.swig.org/download.html
+
+Copy swig.exe to the python installation folder (for ex C:/python27)
+Open the swigwin-3.0.12/Lib folder and copy all *.swg files to the C:/python27/Lib or equivalent python path
+Open swigwin-3.0.12/Lib/python and copy all the files to C:/python27/Lib
+Open the swigwin-3.0.12/Lib folder and copy over the typemaps folder to C:/python27/Lib
