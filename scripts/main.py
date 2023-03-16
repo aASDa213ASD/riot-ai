@@ -1,6 +1,5 @@
 import data, utils
 from os import system, path, getcwd
-from colorama import init, Fore, Back, Style
 from bot import run
 
 class Terminal:
@@ -55,7 +54,7 @@ def main():
     terminal = Terminal()
     terminal.execute('clear')
     while True:
-        prompt = input('league-ai@BOT' + ':' + Fore.LIGHTBLUE_EX + '~' + Style.RESET_ALL + '$ ')
+        prompt = input('league-ai@BOT:~$ ')
         if (prompt in terminal.commands):
             terminal.execute(prompt)
         elif (prompt == 'help' or prompt == 'clear'):
