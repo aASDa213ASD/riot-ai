@@ -71,6 +71,7 @@ def run():
 
 def play():
     print('[Game] Loading screen...')
+    
     while not player.find(pictures.settings, None, is_game=True, conf=0.7):
         sleep(3)
     
@@ -129,7 +130,6 @@ def play():
 
     observer.add_game()
 
-    # Wait until client is visible
     while not observer.find(pictures.honor_a_teammate, regions.choose_champ):
         sleep(5)
         if observer.click_on(pictures.continue_button, regions.find_match, leftClick=True):
@@ -153,7 +153,7 @@ def play():
 
 
 def accept_game():
-    print('[Debug] accept_game')
+    print('[Client] accept_game')
     observer.click_on(pictures.close_challenges, regions.close_challenges, leftClick=True)
 
     while not observer.click_on(pictures.accept, regions.accept, leftClick=True):
