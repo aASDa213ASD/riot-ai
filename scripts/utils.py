@@ -5,34 +5,24 @@ from re import search
 from os import path, getcwd
 from time import time
 
-# Vars declaration
 settings = ConfigParser()
 settings.read(path.join(getcwd(), "settings.ini"))
 bot_settings = settings['Settings']
 
-def get_account_info():
-    data.summoner_name = bot_settings['Name']
-    data.summoner_region = bot_settings['Region']
 
+def read_settings():
+    data.game_mode = bot_settings['game_mode']
+    data.game_map = bot_settings['game_map']
+    data.game_queue = bot_settings['game_queue']
+    data.account_level_cap = bot_settings.getint('account_level_cap')
+    data.random_champs = bot_settings.getboolean('random_champs')
+    data.random_runes = bot_settings.getboolean('random_runes')
+    if data.random_runes:
+        data.random_summs = False
+    else:
+        data.random_summs = bot_settings.getboolean('random_summs')
+    data.honor_teammates = bot_settings.getboolean('honor_teammates')
 
-def get_level_cap():
-    data.account_level_cap = bot_settings.getint('AccountLevelCap')
-    if (data.account_level_cap != 0):
-        data.account_level_flag = True
-
-
-def get_runes_n_summs():
-    data.random_runes_summs = bot_settings.getint('RandomRunesNSumms')
-    data.random_summs = bot_settings.getint('RandomSumms')
-    if (data.random_runes_summs):
-        data.random_summs = 0
-
-
-def get_champion_setting():
-    data.random_champions = bot_settings.getint('RandomChamps')
-
-def get_honor_setting():
-    data.honor_teammates = bot_settings.getint('HonorTeammates')
 
 def get_account_level():
     url = f'https://www.leagueofgraphs.com/summoner/{data.summoner_region.lower()}/{data.summoner_name}'
@@ -48,11 +38,7 @@ def get_account_level():
     data.account_level_last_check = time()
     data.account_level = level
 
+
 def perform_setup():
     settings.read(path.join(getcwd(), "settings.ini"))
-    get_account_info()
-    get_account_level()
-    get_level_cap()
-    get_runes_n_summs()
-    get_champion_setting()
-    get_honor_setting()
+    read_settings()

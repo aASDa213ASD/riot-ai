@@ -4,8 +4,8 @@ from bot import run
 
 class Terminal:
     def __init__(self):
-        data.picture_path = path.join(getcwd(), "images")
-        data.shop_path = path.join(getcwd(), "images\\shop")
+        data.picture_path = path.join(getcwd(), "dataset")
+        data.shop_path = path.join(getcwd(), "dataset\\shop")
         self.commands = ['run', 'stop', 'settings', 'version', 'load', 'set']
 
     def execute(self, command, args = None):
@@ -22,7 +22,7 @@ class Terminal:
         system('cls')
 
     def execute_run(self):
-        if (data.summoner_name is not None and data.games_to_play >= 1):
+        if (data.games_to_play >= 1):
             run()
         else:
             print('Wrong setup.')
@@ -31,17 +31,15 @@ class Terminal:
         exit()
     
     def execute_settings(self):
-        print(f'Games: {data.games_finished}/{data.games_to_play}')
-        print(f'Account: {data.summoner_name}')
-        print(f'Region: {data.summoner_region}')
-        print(f'AccountLevelCap: {data.account_level_cap}')
-        print(f'RandomChamps: {data.random_champions}')
-        print(f'RandomRunesNSumms: {data.random_runes_summs}')
-        print(f'RandomSumms: {data.random_summs}')
-        print(f'HonorTeammates: {data.honor_teammates}')
+        print(f'games: {data.games_finished}/{data.games_to_play}')
+        print(f'account_level_cap: {data.account_level_cap}')
+        print(f'random_champs: {data.random_champs}')
+        print(f'random_runes: {data.random_runes}')
+        print(f'random_summs: {data.random_summs}')
+        print(f'honor_teammates: {data.honor_teammates}')
 
     def execute_version(self):
-        print('LEAGUE-AI Build 1.0 (03 Mar. 2023) // prxvatescrxpts')
+        print('LEAGUE-AI Build 1.1 (03 Mar. 2023) // prxvatescrxpts')
     
     def execute_load(self):
         utils.perform_setup()

@@ -1,4 +1,4 @@
-import data, utils, pictures, regions
+import data, img, regions, utils
 from shop import Shop, shop_do
 from observer import Observer
 from player import Player
@@ -9,70 +9,42 @@ player = Player()
 shop = Shop()
 
 # TODO: Rewrite ludens recipe in shop.py
-# TODO: Add ahri in observer.championslist
-# TODO: Set custom level in settings.ini (0, 10, 30 was needed so far)
+# TODO: Implement ahri as a champ, or any other mage like brand
+# TODO: Implement account_level_cap in settings
+# TODO: Test for infinity cycling
 
 def run():
     observer.update_title()
     while True:
-        start = perf_counter()
-    
-        if time() - data.account_level_last_check > 3600:
-            try:
-                utils.get_account_level()
-                observer.update_title()
-            except Exception:
-                pass
-
+        time_start = perf_counter()
         if observer.can_see_window('League of Legends (TM) Client'):
             play()
-            continue
+        
+        if observer.find(img.honor_a_teammate, regions.client_header):
+            observer.honor_teammate(observer.get_coords('League of Legends'))
+        
+        observer.click_on(img.btn_ok, regions.client_footer, leftClick=True)
+        observer.click_on(img.btn_close, regions.client_email_verification, leftClick=True)
 
-        # if data.account_level_flag: # TODO: Rewrite
-        #     if observer.find(pictures.level_30, regions.account_level) is not None:
-        #         print('Level 30 reached !')
-        #         observer.close_process('League of Legends')
-        #         break
-
-        if observer.find(pictures.daily_play, None) is not None:
+        if observer.find(img.daily_play, None):
             observer.claim_daily_play()
-
-        observer.click_on(pictures.ok, regions.level_up_ok, leftClick=True)
-        observer.click_on(pictures.close_email, regions.email_verification, leftClick=True)
-        observer.click_on(pictures.close_challenges, regions.close_challenges, leftClick=True)
-
-        if not observer.click_on(pictures.play_button, regions.play_button, leftClick=True, delay=True):
-            observer.click_on(pictures.party, regions.play_button, leftClick=True, delay=True)
-
-        # if observer.click_on(
-        #     pictures.players_are_not_ready, regions.lobby_status
-        #     ) or observer.click_on(pictures.players_are_not_ready_2, regions.lobby_status):
-        #     # Create new queue due to a bug with lane selection on intro bots
-        #     observer.click_on(pictures.close_email, regions.lobby_status, leftClick=True, conf=0.7)
-
-        observer.click_on(pictures.coop_vs_ai, regions.game_mode_select, leftClick=True, delay=True)
-
-        if observer.click_on(pictures.intro_bots, regions.intro_bots, leftClick=True):
-            observer.click_on(pictures.confirm, regions.confirm, leftClick=True)
-        else:
-            pass
-
-        if observer.click_on(pictures.continue_button, regions.find_match, delay=True):
-            # Create new queue due to a bug with lane selection on intro bots
-            observer.click_on(pictures.close_email, regions.lobby_status, leftClick=True, conf=0.7)
-
-        observer.click_on(pictures.play_again, regions.find_match, leftClick=True, delay=True) # Needed ?
-
+        
+        if (observer.click_on(img.btn_continue, regions.client_footer)
+            or observer.click_on(img.btn_playagain, regions.client_footer)):
+                observer.click_on(img.btn_close, regions.client_footer, leftClick=True, conf=0.7)
+        
+        observer.click_on(img.btn_play, regions.client_header, leftClick=True)
+        handle_lobby()
         accept_game()
-
-        end = perf_counter()
-        print('[Client] %f' % (end - start))
+     
+        time_end = perf_counter()
+        print('<Client> %f' % (time_end - time_start))
 
 
 def play():
-    print('[Game] Loading screen...')
+    print('<Game> Loading screen...')
     
-    while not player.find(pictures.settings, None, is_game=True, conf=0.7):
+    while not player.find(img.interface_settings, None, is_game=True, conf=0.7):
         sleep(3)
     
     coordinates = None
@@ -95,7 +67,7 @@ def play():
         
         if observer.can_see_window('GPU Error'):
             sleep(2)
-            if observer.click_on(pictures.gpu_error_ok, None, leftClick=True, conf=0.9):
+            if observer.click_on(img.btn_ok_gpu, None, leftClick=True, conf=0.9):
                 sleep(5)
                 observer.close_process('League of Legends (TM) Client')
 
@@ -110,7 +82,7 @@ def play():
                                 else:
                                     player.click_mid(rect)
                             else:
-                                coordinates = player.find(pictures.minion_hpbar, regions.enemy_location_nearby, is_game=True)
+                                coordinates = player.find(img.healthbar_minion, regions.enemy_location_nearby, is_game=True)
                                 if coordinates is not None:
                                     player.cast_skill(coordinates[0], coordinates[1] + 25)
                 else:
@@ -126,45 +98,62 @@ def play():
         player.upgrade_skills()
 
         end = perf_counter()
-        print("[Game] %f" % (end - start))
+        print("<Game> %f" % (end - start))
 
     observer.add_game()
 
-    while not observer.find(pictures.honor_a_teammate, regions.choose_champ):
+    while not observer.find(img.honor_a_teammate, regions.client_header):
         sleep(5)
-        if observer.click_on(pictures.continue_button, regions.find_match, leftClick=True):
+        if observer.click_on(img.btn_continue, regions.client_footer, leftClick=True):
             break
-        if observer.click_on(pictures.play_again, regions.find_match, leftClick=True):
+        if observer.click_on(img.btn_playagain, regions.client_footer, leftClick=True):
             break
-        if observer.click_on(pictures.reconnect, regions.reconnect, leftClick=True):
+        if observer.click_on(img.btn_reconnect, regions.client_body, leftClick=True):
             sleep(10)
             break
-        if observer.click_on(pictures.play_button, regions.play_button, leftClick=True):
+        if observer.click_on(img.btn_play, regions.client_header, leftClick=True):
             break
     
-    # Honor a teammate
-    rect = observer.get_coords('League of Legends')
-    observer.honor_teammate(rect)
-    
-    # Check if bot finished all games
     if data.games_finished == data.games_to_play:
         observer.close_process('LeagueClient.exe')
         stop_bot()
 
 
 def accept_game():
-    print('[Client] accept_game')
-    observer.click_on(pictures.close_challenges, regions.close_challenges, leftClick=True)
+    while observer.click_on(img.btn_close_rewards, regions.client_body, leftClick=True):
+        observer.say('Closing rewards windows')
+        sleep(1)
 
-    while not observer.click_on(pictures.accept, regions.accept, leftClick=True):
-        if not observer.click_on(pictures.find_match_hover, regions.find_match, leftClick=True):
-            if observer.find(pictures.in_queue, regions.find_match) is not None:
+    while not observer.click_on(img.btn_accept, regions.client_body, leftClick=True):
+        if not observer.click_on(img.btn_findmatch, regions.client_footer, leftClick=True):
+            if observer.find(img.btn_inqueue, regions.client_footer):
                 continue
-            elif observer.find(pictures.choose_champ, regions.choose_champ) is not None:
+            elif observer.find(img.pick_your_champion, regions.client_header):
                 observer.champ_select()
                 observer.set_runes_and_summs()
             else:
                 break
+
+
+def handle_lobby():
+    if observer.click_on(img.gamemode_training, None, leftClick=True):
+        if data.game_mode == 'COOP_VS_AI':
+            if observer.click_on(img.gamemode_coopvsai, None, leftClick=True, delay=True):
+                if data.game_queue == 'INTRO':
+                    if observer.click_on(img.queue_intro, None, leftClick=True):
+                        observer.click_on(img.btn_confirm, None, leftClick=True)
+                elif data.game_queue == 'BEGINNER':
+                    if observer.click_on(img.queue_beginner, None, leftClick=True):
+                        observer.click_on(img.btn_confirm, None, leftClick=True)
+                elif data.game_queue == 'INTERMEDIATE':
+                    if observer.click_on(img.queue_intermediate, None, leftClick=True):
+                        observer.click_on(img.btn_confirm, None, leftClick=True)
+
+        elif data.game_mode == 'PVP':
+            if observer.click_on(img.gamemode_pvp, None, leftClick=True, delay=True):
+                if data.game_map == 'ARAM':
+                    if observer.click_on(img.map_aram, None, leftClick=True):
+                        observer.click_on(img.btn_confirm, None, leftClick=True)
 
 
 def stop_bot():

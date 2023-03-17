@@ -1,18 +1,16 @@
 # Bot settings
+game_mode = None
+game_map = None
+game_queue = None
+account_level_cap = 0
+random_champs = False
+random_runes = False
+random_summs = False
+honor_teammates = False
+
+# Bot game settings
 games_to_play = 0
 games_finished = 0
-random_champions = 0
-random_runes_summs = 0
-random_summs = 0
-honor_teammates = 0
-
-# Account-related vars
-summoner_name = None
-summoner_region = None
-account_level = 0
-account_level_last_check = 0
-account_level_cap = 0
-account_level_flag = False
 
 # Path vars
 picture_path = None

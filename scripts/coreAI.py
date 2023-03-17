@@ -4,8 +4,6 @@ import data
 from time import sleep
 from os import path
 
-# Line 67 TypeError: 'bool' object is not subscriptable (coordinates)
-
 class CoreAI:
     def __init__(self):
         pass

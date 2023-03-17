@@ -1,5 +1,5 @@
 import win32api, win32con
-import regions, pictures
+import regions, img
 from pictures_shop import health_potion
 from coreAI import CoreAI
 from time import sleep, perf_counter
@@ -18,6 +18,9 @@ class Player(CoreAI):
     def __init__(self):
         pass
 
+    def say(self, message: str):
+        print('<Player>', message)
+    
     def click_mid(self, rect):
         # Blue side mid coordinates
         self.x = rect[0] + 1241
@@ -41,8 +44,8 @@ class Player(CoreAI):
         self.click(self.x, self.y, rmb=True)
 
     def is_in_turret_range(self, region_turret):
-        if self.find(pictures.turret, region_turret, is_game=True, conf=0.9) is not None:
-            print("Turret aware")
+        if self.find(img.healthbar_turret, region_turret, is_game=True, conf=0.9) is not None:
+            self.say('Tower detected')
             return True
         return False
 
@@ -70,15 +73,15 @@ class Player(CoreAI):
         return False # Do I really need to return anything?
 
     def lock_screen(self):
-        self.click_on(pictures.cam, None, is_game=True, leftClick=True)
+        self.click_on(img.interface_cam, None, is_game=True, leftClick=True)
 
     def is_dead(self):
-        if self.find(pictures.death, regions.health_bar, is_game=True):
+        if self.find(img.interface_death, regions.health_bar, is_game=True):
             return False
         return True
 
     def needs_recall(self):
-        if self.find(pictures.low_hp, regions.hud, is_game=True) is None:
+        if self.find(img.interface_low_hp, regions.hud, is_game=True) is None:
             return True
         return False
 
@@ -88,7 +91,7 @@ class Player(CoreAI):
         self.click(self.x, self.y, rmb=True)
         self.use_summoner_spell('f')
 
-        if self.find(pictures.heal, regions.hud, is_game=True, conf=0.7):
+        if self.find(img.interface_heal, regions.hud, is_game=True, conf=0.7):
             self.use_summoner_spell('d')
         elif self.find(health_potion, regions.inventory, is_game=True, shop_file_path=True, conf=0.7):
             self.use_health_potion()
@@ -100,12 +103,12 @@ class Player(CoreAI):
             sleep(1.5)
         # Recalling and looking for enemies
         if not self.is_dead():
-            print('Recall')
+            self.say('Recalling')
             recall_start_time = perf_counter()
             ahk.key_press('b')
             while not perf_counter() - recall_start_time > 12:
                 sleep(0.5)
-                if self.find(pictures.enemy_hpbar, regions.enemy_location_far, is_game=True, conf=0.9):
+                if self.find(img.healthbar_enemy, regions.enemy_location_far, is_game=True, conf=0.9):
                     self.recall(rect)
             self.click(rect[0] + 1240, rect[1] + 360)
 
@@ -119,10 +122,10 @@ class Player(CoreAI):
         return True
 
     def has_enemy_nearby(self, rect):
-        while self.find(pictures.enemy_hpbar, regions.enemy_location_far, is_game=True, conf=0.9):
+        while self.find(img.healthbar_enemy, regions.enemy_location_far, is_game=True, conf=0.9):
             if self.is_dead():
                 break
-            print('Spacegliding')
+            self.say('Spacegliding')
             if not self.needs_recall():
                 self.kite_back(rect, attackmove=True)
                 sleep(0.3)
@@ -131,7 +134,7 @@ class Player(CoreAI):
         return False
 
     def has_minions_nearby(self):
-        if self.click_on(pictures.minion_hpbar, regions.enemy_location_far, is_game=True, rightClick=True, y_align=25):
+        if self.click_on(img.healthbar_minion, regions.enemy_location_far, is_game=True, rightClick=True, y_align=25):
             return True
         return False
 
