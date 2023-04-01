@@ -2,8 +2,7 @@ import psutil, ctypes
 import data, regions, shop, img
 from coreAI import CoreAI
 from numpy import random
-from time import sleep, perf_counter
-
+from time import sleep, perf_counter, time
 
 class Observer(CoreAI):
     champions_list = [img.missfortune, img.ashe]
@@ -55,27 +54,12 @@ class Observer(CoreAI):
         return
     
     def add_game(self):
-        # Reset ingame vars
         data.ingame = 0
-        # Reset shop vars
         data.current_champion = None
         shop.mythic_recipe.clear()
         data.games_finished += 1
         self.update_title()
 
-    def wait_until_client_is_visible(self):
-        while not self.find(img.honor_a_teammate, regions.client_header):
-            sleep(5)
-            if self.find(img.btn_continue, regions.client_footer, leftClick=True):
-                break
-            if self.find(img.btn_playagain, regions.client_footer, leftClick=True):
-                break
-            if self.find(img.btn_reconnect, regions.client_body, leftClick=True):
-                sleep(10)
-                break
-            if self.find(img.btn_play, regions.client_header, leftClick=True):
-                break
-    
     def honor_teammate(self, rect):
         if data.honor_teammates:
             if self.find(img.honor_a_teammate, regions.client_header):
@@ -140,3 +124,63 @@ class Observer(CoreAI):
                 spell = random.randint(5)
                 sleep(2)
                 self.click_on(self.summonerSpells_list[spell], regions.summoner_spell_select, leftClick=True)
+    
+    def wait_for_client(self):
+        while not self.find(img.honor_a_teammate, regions.client_header):
+            sleep(5)
+            if self.click_on(img.btn_continue, regions.client_footer, leftClick=True):
+                break
+            if self.click_on(img.btn_playagain, regions.client_footer, leftClick=True):
+                break
+            if self.click_on(img.btn_play, regions.client_header, leftClick=True):
+                break
+            if self.click_on(img.btn_ok, regions.client_footer):
+                break
+            if self.click_on(img.btn_reconnect, regions.client_body, leftClick=True):
+                sleep(10)
+                break
+    
+    def accept_game(self):
+        while self.click_on(img.btn_close_rewards, regions.client_body, leftClick=True):
+            self.say('Closing rewards windows')
+            sleep(1)
+
+        while not self.click_on(img.btn_accept, regions.client_body, leftClick=True):
+            if not self.click_on(img.btn_findmatch, regions.client_footer, leftClick=True):
+                if self.find(img.btn_inqueue, regions.client_footer):
+                    continue
+                elif self.find(img.pick_your_champion, regions.client_header):
+                    self.champ_select()
+                    self.set_runes_and_summs()
+                else:
+                    break
+    
+    def handle_lobby(self):
+        if self.click_on(img.gamemode_training, None, leftClick=True):
+            if data.game_mode == 'COOP_VS_AI':
+                if self.click_on(img.gamemode_coopvsai, None, leftClick=True, delay=True):
+                    if data.game_queue == 'INTRO':
+                        if self.click_on(img.queue_intro, None, leftClick=True):
+                            self.click_on(img.btn_confirm, None, leftClick=True)
+                    elif data.game_queue == 'BEGINNER':
+                        if self.click_on(img.queue_beginner, None, leftClick=True):
+                            self.click_on(img.btn_confirm, None, leftClick=True)
+                    elif data.game_queue == 'INTERMEDIATE':
+                        if self.click_on(img.queue_intermediate, None, leftClick=True):
+                            self.click_on(img.btn_confirm, None, leftClick=True)
+
+            elif data.game_mode == 'PVP':
+                if self.click_on(img.gamemode_pvp, None, leftClick=True, delay=True):
+                    if data.game_map == 'ARAM':
+                        if self.click_on(img.map_aram, None, leftClick=True):
+                            self.click_on(img.btn_confirm, None, leftClick=True)
+        
+    def handle_stuck(self):
+        self.say('Idle detected, restarting UX...')
+        self.close_process('LeagueClientUx.exe')
+
+        while not self.can_see_window('League of Legends'):
+            sleep(10)
+            
+        self.click_on(img.btn_close, regions.client_email_verification, leftClick=True)
+        self.click_on(img.btn_close, regions.client_footer, leftClick=True, conf=0.7)

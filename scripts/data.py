@@ -12,6 +12,10 @@ honor_teammates = False
 games_to_play = 0
 games_finished = 0
 
+# Self repair
+time_max_idle = 900
+time_idle = 0
+
 # Path vars
 picture_path = None
 shop_path = None

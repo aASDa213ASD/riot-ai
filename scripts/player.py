@@ -139,7 +139,7 @@ class Player(CoreAI):
         return False
 
     def minions_spawned(self, gametime):
-        if perf_counter() - gametime > 97:
+        if perf_counter() - gametime > 80:
             return True
         return False
 

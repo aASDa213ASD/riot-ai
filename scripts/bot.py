@@ -8,21 +8,49 @@ observer = Observer()
 player = Player()
 shop = Shop()
 
-# TODO: Rewrite ludens recipe in shop.py
-# TODO: Implement ahri as a champ, or any other mage like brand
+# GAMEPLAY TASKS:
+# TODO: 1. Test for infinite cycle
+#           1.1. [Fixed] Fix STUCK when the game ends and account levels up at the same time
+#                it doesn't see the OK button and gets stuck
+#           1.2. Sometimes LeagueClient is stopping responding and targets as the
+#                main window which confuses the bot, makes it AFK and think that the game is still going
+#           1.3. [Fixed] Sometimes when new lobby is created "Find match" button is gray and inactive, lobby is stuck
+# 
+# TODO: 2. Improve general gameplay mechanics {
+#       Recall - should first check for enemies and recall after.
+#       Because now it Recalls, checks for enemies -> run, recall - check for enemies
+#       Should be like if enemies nearby - run until they are not (constantly check while recalling)
+#       So there's no situations where the bot stops for recall while the enemy is running on him (high death chance)
+#       }
+# TODO: 3. Implement other champs from start pool
+# TODO: 4. 
+# SHOP TASKS:
+# FIXME: 1. Rewrite ludens recipe in shop.py
+# TODO: 2. Implement cookies usage
+# GENERAL TASKS:
 # TODO: Implement account_level_cap in settings
-# TODO: Test for infinity cycling
+# TODO: Separate gameplay functions for different modes like PVP/COOP_VS_AI
+# MISSION IMPOSSIBLE:
+# FIXME: Add separate gameplay functions for certain champion to fully
+#        abuse champion's mechanics, like Irelia's wave clear, draven axe catching, etc.
 
 def run():
     observer.update_title()
     while True:
         time_start = perf_counter()
+        time_idle_elapsed = time() - data.time_idle
+
         if observer.can_see_window('League of Legends (TM) Client'):
             play()
+            data.time_idle = time()
         
         if observer.find(img.honor_a_teammate, regions.client_header):
             observer.honor_teammate(observer.get_coords('League of Legends'))
-        
+
+        if time_idle_elapsed >= data.time_max_idle:
+            observer.handle_stuck()
+            data.time_idle = time()
+
         observer.click_on(img.btn_ok, regions.client_footer, leftClick=True)
         observer.click_on(img.btn_close, regions.client_email_verification, leftClick=True)
 
@@ -34,11 +62,11 @@ def run():
                 observer.click_on(img.btn_close, regions.client_footer, leftClick=True, conf=0.7)
         
         observer.click_on(img.btn_play, regions.client_header, leftClick=True)
-        handle_lobby()
-        accept_game()
+        observer.handle_lobby()
+        observer.accept_game()
      
         time_end = perf_counter()
-        print('<Client> %f' % (time_end - time_start))
+        print(f'<Client> {(time_end - time_start):.3f}')
 
 
 def play():
@@ -83,7 +111,7 @@ def play():
                                     player.click_mid(rect)
                             else:
                                 coordinates = player.find(img.healthbar_minion, regions.enemy_location_nearby, is_game=True)
-                                if coordinates is not None:
+                                if coordinates:
                                     player.cast_skill(coordinates[0], coordinates[1] + 25)
                 else:
                     player.kite_back(rect)
@@ -101,59 +129,11 @@ def play():
         print("<Game> %f" % (end - start))
 
     observer.add_game()
-
-    while not observer.find(img.honor_a_teammate, regions.client_header):
-        sleep(5)
-        if observer.click_on(img.btn_continue, regions.client_footer, leftClick=True):
-            break
-        if observer.click_on(img.btn_playagain, regions.client_footer, leftClick=True):
-            break
-        if observer.click_on(img.btn_reconnect, regions.client_body, leftClick=True):
-            sleep(10)
-            break
-        if observer.click_on(img.btn_play, regions.client_header, leftClick=True):
-            break
+    observer.wait_for_client()
     
     if data.games_finished == data.games_to_play:
         observer.close_process('LeagueClient.exe')
         stop_bot()
-
-
-def accept_game():
-    while observer.click_on(img.btn_close_rewards, regions.client_body, leftClick=True):
-        observer.say('Closing rewards windows')
-        sleep(1)
-
-    while not observer.click_on(img.btn_accept, regions.client_body, leftClick=True):
-        if not observer.click_on(img.btn_findmatch, regions.client_footer, leftClick=True):
-            if observer.find(img.btn_inqueue, regions.client_footer):
-                continue
-            elif observer.find(img.pick_your_champion, regions.client_header):
-                observer.champ_select()
-                observer.set_runes_and_summs()
-            else:
-                break
-
-
-def handle_lobby():
-    if observer.click_on(img.gamemode_training, None, leftClick=True):
-        if data.game_mode == 'COOP_VS_AI':
-            if observer.click_on(img.gamemode_coopvsai, None, leftClick=True, delay=True):
-                if data.game_queue == 'INTRO':
-                    if observer.click_on(img.queue_intro, None, leftClick=True):
-                        observer.click_on(img.btn_confirm, None, leftClick=True)
-                elif data.game_queue == 'BEGINNER':
-                    if observer.click_on(img.queue_beginner, None, leftClick=True):
-                        observer.click_on(img.btn_confirm, None, leftClick=True)
-                elif data.game_queue == 'INTERMEDIATE':
-                    if observer.click_on(img.queue_intermediate, None, leftClick=True):
-                        observer.click_on(img.btn_confirm, None, leftClick=True)
-
-        elif data.game_mode == 'PVP':
-            if observer.click_on(img.gamemode_pvp, None, leftClick=True, delay=True):
-                if data.game_map == 'ARAM':
-                    if observer.click_on(img.map_aram, None, leftClick=True):
-                        observer.click_on(img.btn_confirm, None, leftClick=True)
 
 
 def stop_bot():

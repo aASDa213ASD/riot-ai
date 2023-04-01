@@ -18,7 +18,7 @@ class CoreAI:
                 x += region[0]
                 y += region[1]
             else:
-                monitor = {"top": 0, "left": 0, "width": 1280, "height": 1024}
+                monitor = {"top": 0, "left": 0, "width": 1280, "height": 1024}  
                 screen = sct.grab(monitor=monitor)
             screen = np.array(screen)
 
