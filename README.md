@@ -12,7 +12,7 @@ I used this "bot" on a very poor dual-core machine with integrated graphics so l
 This project uses mss obviously and even that was kinda slow so I wrote a custom method or locating objects on the image [here](scripts/coreAI.py#L11) that uses CV2 to analyze an image, convert colors to a simpler scheme and try to identify an object using confidence bias, returns x and y coordinates of the object on screen.
 
 # The gameplay level
-At the time this bot performed quite well at beating easiest "intro" bots, it has health management mechanics, turrets and enemies awareness, custom [shopping code](scripts/shop.py) that crafts and item using recipe, that wasn't a thing on any bot that you met back in those days. Usually bots buy whole components at 1 go, this one crafts a component 1 by 1 on each recall using predefined recipes (also pixel based). Code in here sucks but it worked lol. Here are some games of this guy:
+At the time this bot performed quite well at beating easiest "intro" bots, it has health management mechanics, turrets and enemies awareness, custom [shopping code](scripts/shop.py) that crafts an item using recipe, that wasn't a thing on any bot that you met back in those days. Usually bots buy whole components at 1 go, this one crafts a component 1 by 1 on each recall using predefined recipes (also pixel based). Code in here sucks but it worked lol. Here are some games of this guy:
 ![Screenshot](.github/league-ai.png)
 
 It leveled under 100 accounts in league using couple of bare-metal machines from 2003 and none of those accounts ever got banned for botting.
